@@ -12,8 +12,8 @@ export const s3Client = new S3Client({
 
 export const getPublicUrl = (key: string) => {
   // Hardcoding the domain as requested, or using an env variable
-  const base = "https://s3.sequence3.se";
+  const base = process.env.R2_PUBLIC_URL;
   return `${base}/${key.startsWith("/") ? key.slice(1) : key}`;
 };
 
-export const resolvePublicBaseUrl = () => "https://s3.sequence3.se";
+export const resolvePublicBaseUrl = () => process.env.R2_PUBLIC_URL;
