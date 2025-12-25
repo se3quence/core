@@ -1,10 +1,15 @@
+/* 1. Import the Google Font at the top */
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap");
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: var(--font-inter);
+  /* 2. Update the sans font family here */
+  --font-sans: "Google Sans Flex", sans-serif;
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -117,6 +122,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "Google Sans Flex", sans-serif; /* Explicit fallback for body */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { use, useState, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
-import { CircleIcon, Home, LogOut } from 'lucide-react';
+import { CircleIcon, Home, LogOut, Plus } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,9 +38,13 @@ function UserMenu() {
         >
           Pricing
         </Link>
-        <Button asChild className="rounded-full">
-          <Link href="/sign-up">Sign Up</Link>
-        </Button>
+        <div className="relative">
+          <Plus className="absolute -top-1 -right-1 size-4 text-orange-500" />
+          <Plus className="absolute -bottom-1 -left-1 size-4 text-orange-500" />
+          <Button asChild className="rounded-none">
+            <Link href="/sign-up">Sign Up</Link>
+          </Button>
+        </div>
       </>
     );
   }
