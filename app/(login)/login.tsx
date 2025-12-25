@@ -22,13 +22,12 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
   );
 
   return (
-    // h-[100dvh] ensures it takes full viewport height, overflow-hidden prevents scrolling
-    <div className="flex h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-background p-4 md:p-10">
+    <div className="flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-background p-4 md:p-10">
       <div className="w-full max-w-sm md:max-w-4xl">
         {/* Main Grid Container */}
         <div className="relative border border-border bg-card shadow-sm">
           {/* ------------------------------------------------------------------
-              Corner Icons (Absolute positioning relative to the main grid)
+              Corner Icons
           ------------------------------------------------------------------ */}
           <Plus
             className="absolute -top-3 -left-3 size-6 text-muted-foreground/40 z-20"
@@ -48,22 +47,25 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
           />
 
           {/* ------------------------------------------------------------------
-              Row 1: Header (Compact on mobile)
+              Row 1: Header
           ------------------------------------------------------------------ */}
-          <div className="relative flex flex-col items-center justify-center border-b border-border p-5 md:p-8 text-center">
-            {/* Junction Marker */}
+          <div className="relative flex flex-col items-center justify-center border-b border-border p-6 md:p-8 text-center">
             <Plus
               className="absolute -bottom-3 left-1/2 -translate-x-1/2 size-6 text-muted-foreground/40 z-20 hidden md:block"
               strokeWidth={1}
             />
 
-            <div className="mb-2 flex size-8 items-center justify-center rounded-full bg-primary/10 md:mb-4 md:size-10">
+            <div className="mb-3 flex size-9 items-center justify-center rounded-full bg-primary/10 md:mb-4 md:size-10">
               <CircleIcon className="size-5 text-primary md:size-6" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight md:text-3xl">
+
+            {/* Responsive Text: Larger on mobile now (text-2xl) */}
+            <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
               {mode === "signin" ? "Welcome back" : "Create account"}
             </h1>
-            <p className="mt-1 text-xs text-muted-foreground md:mt-2 md:text-sm">
+
+            {/* Responsive Text: text-sm on mobile is much more readable than xs */}
+            <p className="mt-2 text-sm text-muted-foreground md:text-base">
               {mode === "signin"
                 ? "Enter credentials to access dashboard"
                 : "Enter details to get started"}
@@ -71,11 +73,11 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
           </div>
 
           {/* ------------------------------------------------------------------
-              Row 2: Content (Form & Image)
+              Row 2: Content
           ------------------------------------------------------------------ */}
           <div className="grid md:grid-cols-2">
             {/* Left Column: Form */}
-            <div className="relative p-5 md:p-8 md:border-r border-border">
+            <div className="relative p-6 md:p-8 md:border-r border-border">
               <form
                 className="flex flex-col gap-4"
                 action={formAction}
@@ -96,11 +98,12 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
                   value={inviteId || ""}
                 />
 
-                <div className="grid gap-3">
-                  <div className="grid gap-1.5">
+                <div className="grid gap-4">
+                  <div className="grid gap-2">
+                    {/* Label: text-sm is standard for mobile legibility */}
                     <Label
                       htmlFor="email"
-                      className="text-xs md:text-sm"
+                      className="text-sm font-medium"
                     >
                       Email
                     </Label>
@@ -112,22 +115,23 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
                       defaultValue={state.email}
                       required
                       maxLength={50}
-                      className="h-9 bg-background/50 border-border md:h-10"
+                      // Key Change: text-base prevents iOS zoom, md:text-sm scales it back down for desktop elegance
+                      className="h-10 bg-background/50 border-border text-xs md:text-sm"
                     />
                   </div>
 
-                  <div className="grid gap-1.5">
+                  <div className="grid gap-2">
                     <div className="flex items-center justify-between">
                       <Label
                         htmlFor="password"
-                        className="text-xs md:text-sm"
+                        className="text-sm font-medium"
                       >
                         Password
                       </Label>
                       {mode === "signin" && (
                         <Link
                           href="/forgot-password"
-                          className="text-[10px] text-muted-foreground underline-offset-4 hover:underline hover:text-primary md:text-xs"
+                          className="text-xs text-muted-foreground underline-offset-4 hover:underline hover:text-primary"
                         >
                           Forgot?
                         </Link>
@@ -144,19 +148,21 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
                       required
                       minLength={8}
                       maxLength={100}
-                      className="h-9 bg-background/50 border-border md:h-10"
+                      // Key Change: text-base prevents iOS zoom
+                      className="h-10 bg-background/50 border-border text-base md:text-sm"
                     />
                   </div>
 
                   {state?.error && (
-                    <div className="text-xs font-medium text-destructive">
+                    <div className="text-sm font-medium text-destructive">
                       {state.error}
                     </div>
                   )}
 
                   <Button
                     type="submit"
-                    className="mt-1 w-full"
+                    className="mt-2 w-full text-sm md:text-sm"
+                    size="lg" // Larger touch target for mobile
                     disabled={pending}
                   >
                     {pending ? (
@@ -172,8 +178,7 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
                   </Button>
                 </div>
 
-                {/* Compact Divider */}
-                <div className="relative text-center text-[10px] after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border md:text-xs">
+                <div className="relative text-center text-xs after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                   <span className="relative z-10 bg-card px-2 text-muted-foreground">
                     Or continue with
                   </span>
@@ -182,12 +187,11 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
                 <div className="grid grid-cols-2 gap-3">
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="w-full"
+                    className="w-full text-sm md:text-sm"
                     type="button"
                   >
                     <svg
-                      className="mr-2 h-3.5 w-3.5"
+                      className="mr-2 h-4 w-4"
                       aria-hidden="true"
                       fill="currentColor"
                       viewBox="0 0 24 24"
@@ -198,12 +202,11 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="w-full"
+                    className="w-full text-sm md:text-sm"
                     type="button"
                   >
                     <svg
-                      className="mr-2 h-3.5 w-3.5"
+                      className="mr-2 h-4 w-4"
                       aria-hidden="true"
                       fill="currentColor"
                       viewBox="0 0 24 24"
@@ -216,7 +219,7 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
               </form>
             </div>
 
-            {/* Right Column: Image (Hidden on mobile to ensure form fits) */}
+            {/* Right Column: Image */}
             <div className="relative hidden md:flex flex-col items-center justify-center bg-muted/20 p-8">
               <div className="relative aspect-square w-full max-w-[280px]">
                 <Image
@@ -227,7 +230,7 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
                 />
               </div>
               <div className="mt-8 text-center">
-                <h3 className="text-lg font-medium">Secure & Scalable</h3>
+                <h3 className="text-xl font-medium">Secure & Scalable</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
                   Built with modern architecture for reliability.
                 </p>
@@ -236,17 +239,17 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
           </div>
 
           {/* ------------------------------------------------------------------
-              Row 3: Footer (Compact)
+              Row 3: Footer
           ------------------------------------------------------------------ */}
-          <div className="relative border-t border-border p-4 md:p-8">
-            {/* Junction Marker */}
+          <div className="relative border-t border-border p-6 md:p-8">
             <Plus
               className="absolute -top-3 left-1/2 -translate-x-1/2 size-6 text-muted-foreground/40 z-20 hidden md:block"
               strokeWidth={1}
             />
 
-            <div className="flex flex-col items-center justify-between gap-2 text-center md:flex-row md:text-left">
-              <div className="text-xs text-muted-foreground md:text-sm">
+            <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
+              {/* Footer text increased to text-sm for better mobile reading */}
+              <div className="text-sm text-muted-foreground">
                 {mode === "signin" ? (
                   <>
                     No account?{" "}
@@ -274,7 +277,8 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
                 )}
               </div>
 
-              <div className="flex gap-4 text-[10px] text-muted-foreground md:text-xs">
+              {/* Links increased from text-[10px] to text-xs */}
+              <div className="flex gap-4 text-xs text-muted-foreground">
                 <Link
                   href="#"
                   className="hover:text-foreground"
