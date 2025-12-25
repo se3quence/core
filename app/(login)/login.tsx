@@ -161,6 +161,7 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
 
                   <Button
                     type="submit"
+                    variant={"sequence"}
                     className="mt-2 w-full text-sm md:text-sm"
                     size="lg" // Larger touch target for mobile
                     disabled={pending}

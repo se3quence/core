@@ -1,12 +1,11 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Plus } from "lucide-react"; // Import Plus icon
+import { Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  // Added 'relative' and changed 'rounded-md' to 'rounded-none'
   "group relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-none text-sm font-medium transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
@@ -21,10 +20,12 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // New variant added here
+        sequence:
+          "border border-input bg-[#4f39f6] shadow-xs hover:bg-[#4f39ff] text-white",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        // Removed rounded-md overrides here
         sm: "h-8 gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-10 px-6 has-[>svg]:px-4",
         icon: "size-9",
@@ -56,17 +57,22 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
-      {/* Render decorative Plus icons only if not using asChild 
-         (Slot cannot handle multiple children/siblings easily)
+      {/* Only render decorative Plus icons if:
+        1. Not using asChild (Slot)
+        2. Variant is strictly "sequence"
       */}
-      {!asChild && (
+      {!asChild && variant === "sequence" && (
         <>
-          <Plus className="absolute -left-[-3px] top-1/2 size-2 -translate-y-1/2 text-current opacity-40" />
+          <Plus className="absolute -left-[-3.5px] top-1/2 size-2 -translate-y-1/2 text-current opacity-40" />
           {children}
-          <Plus className="absolute -right-[-3px] top-1/2 size-2 -translate-y-1/2 text-current opacity-40" />
+          <Plus className="absolute -right-[-3.5px] top-1/2 size-2 -translate-y-1/2 text-current opacity-40" />
         </>
       )}
-      {asChild && children}
+
+      {/* If it's NOT sequence (or is asChild), just render children normally.
+        (We duplicate logic slightly to avoid wrapping children in a fragment when unnecessary) 
+      */}
+      {(asChild || variant !== "sequence") && children}
     </Comp>
   );
 }
