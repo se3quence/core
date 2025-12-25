@@ -8,6 +8,7 @@ import {
   Activity,
   LayoutDashboard,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 // import { SidebarNotification } from "@/components/sidebar-notification";
@@ -26,7 +27,7 @@ import {
 // Updated data with your specific links
 const data = {
   user: {
-    name: "ShadcnStore",
+    name: "Sequence3",
     email: "store@example.com",
     avatar: "",
   },
@@ -70,15 +71,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
             >
               <Link href="/dashboard">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <Logo
-                    size={24}
-                    className="text-current"
-                  />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">ShadcnStore</span>
-                  <span className="truncate text-xs">Admin Dashboard</span>
+                <div className="flex items-center gap-3 px-4 py-2">
+                  {/* Text Information */}
+                  <Logo size={26} />
+                  <div className="grid flex-2 text-left text-sm leading-tight">
+                    <span className="truncate font-medium text-foreground">
+                      Sequence3
+                    </span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      Dashboard
+                    </span>
+                  </div>
                 </div>
               </Link>
             </SidebarMenuButton>
