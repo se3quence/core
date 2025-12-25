@@ -51,28 +51,36 @@ function Button({
   }) {
   const Comp = asChild ? Slot : "button";
 
+  // When using asChild, Slot expects exactly one child
+  if (asChild) {
+    return (
+      <Comp
+        data-slot="button"
+        className={cn(buttonVariants({ variant, size, className }))}
+        {...props}
+      >
+        {children}
+      </Comp>
+    );
+  }
+
+  // Regular button rendering
   return (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
-      {/* Only render decorative Plus icons if:
-        1. Not using asChild (Slot)
-        2. Variant is strictly "sequence"
-      */}
-      {!asChild && variant === "sequence" && (
+      {/* Only render decorative Plus icons if variant is "sequence" */}
+      {variant === "sequence" ? (
         <>
           <Plus className="absolute -left-[-3.5px] top-1/2 size-2 -translate-y-1/2 text-current opacity-40" />
           {children}
           <Plus className="absolute -right-[-3.5px] top-1/2 size-2 -translate-y-1/2 text-current opacity-40" />
         </>
+      ) : (
+        children
       )}
-
-      {/* If it's NOT sequence (or is asChild), just render children normally.
-        (We duplicate logic slightly to avoid wrapping children in a fragment when unnecessary) 
-      */}
-      {(asChild || variant !== "sequence") && children}
     </Comp>
   );
 }
