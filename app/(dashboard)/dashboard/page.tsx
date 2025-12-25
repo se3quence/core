@@ -241,7 +241,7 @@ function InviteTeamMember() {
           )}
           <Button
             type="submit"
-            className="bg-orange-500 hover:bg-orange-600 text-white"
+            variant="sequence"
             disabled={isInvitePending || !isOwner}
           >
             {isInvitePending ? (

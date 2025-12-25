@@ -14,6 +14,10 @@ import { Logo } from "@/components/logo";
 // import { SidebarNotification } from "@/components/sidebar-notification";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
+import useSWR from "swr";
+import { User } from "@/lib/db/schema";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 import {
   Sidebar,
   SidebarContent,
@@ -24,43 +28,45 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-// Updated data with your specific links
-const data = {
-  user: {
-    name: "Sequence3",
-    email: "store@example.com",
-    avatar: "",
+// Navigation groups data
+const navGroups = [
+  {
+    label: "Platform",
+    items: [
+      {
+        title: "Team",
+        url: "/dashboard",
+        icon: Users,
+      },
+      {
+        title: "General",
+        url: "/dashboard/general",
+        icon: Settings,
+      },
+      {
+        title: "Activity",
+        url: "/dashboard/activity",
+        icon: Activity,
+      },
+      {
+        title: "Security",
+        url: "/dashboard/security",
+        icon: Shield,
+      },
+    ],
   },
-  navGroups: [
-    {
-      label: "Platform",
-      items: [
-        {
-          title: "Team",
-          url: "/dashboard",
-          icon: Users,
-        },
-        {
-          title: "General",
-          url: "/dashboard/general",
-          icon: Settings,
-        },
-        {
-          title: "Activity",
-          url: "/dashboard/activity",
-          icon: Activity,
-        },
-        {
-          title: "Security",
-          url: "/dashboard/security",
-          icon: Shield,
-        },
-      ],
-    },
-  ],
-};
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: user } = useSWR<User>("/api/user", fetcher);
+
+  // Default user data if not loaded
+  const userData = {
+    name: user?.name || "User",
+    email: user?.email || "",
+    avatar: "", // User schema doesn't have image field, using initials instead
+  };
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -90,7 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        {data.navGroups.map((group) => (
+        {navGroups.map((group) => (
           <NavMain
             key={group.label}
             label={group.label}
@@ -101,7 +107,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarFooter>
         {/* <SidebarNotification /> */}
-        <NavUser user={data.user} />
+        <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>
   );

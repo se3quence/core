@@ -8,6 +8,11 @@ import { ThemeProvider } from "@/components/theme-provider";
 export const metadata: Metadata = {
   title: "Sequence3 - Dashboard",
   description: "Get started with Sequence3",
+  icons: {
+    icon: "/Q.svg",
+    shortcut: "/Q.svg",
+    apple: "/Q.svg",
+  },
 };
 
 export const viewport: Viewport = {

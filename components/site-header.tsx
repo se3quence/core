@@ -7,11 +7,10 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { CommandSearch, SearchTrigger } from "@/components/command-search"
 import { Logo } from "@/components/logo"
+import { Box, Globe, Github } from "lucide-react"
 
 export function SiteHeader() {
   const [searchOpen, setSearchOpen] = React.useState(false)
-  const [isVisible, setIsVisible] = React.useState(true)
-  const lastScrollY = React.useRef(0)
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -25,33 +24,9 @@ export function SiteHeader() {
     return () => document.removeEventListener("keydown", down)
   }, [])
 
-  React.useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY
-
-      if (currentScrollY < 10) {
-        // Show header at the top
-        setIsVisible(true)
-      } else if (currentScrollY > lastScrollY.current) {
-        // Scrolling down - hide header
-        setIsVisible(false)
-      } else {
-        // Scrolling up - show header
-        setIsVisible(true)
-      }
-
-      lastScrollY.current = currentScrollY
-    }
-
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
   return (
     <>
-      <header className={`sticky top-0 z-50 flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-transform duration-300 ease-in-out ${
-        isVisible ? "translate-y-0" : "-translate-y-full"
-      }`}>
+      <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-[width,height] ease-linear">
         <div className="flex w-full items-center gap-1 px-4 py-3 lg:gap-2 lg:px-6">
           <SidebarTrigger className="-ml-1" />
           <Separator
@@ -67,11 +42,44 @@ export function SiteHeader() {
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-full bg-muted hover:bg-muted/80"
+              variant="sequence"
+              asChild
+              size="sm"
             >
-              <span className="text-sm font-medium">t</span>
+              <Link href="/blocks" className="flex items-center gap-2">
+                <Box className="h-4 w-4" />
+                <span>Blocks</span>
+              </Link>
+            </Button>
+            <Button
+              variant="sequence"
+              asChild
+              size="sm"
+            >
+              <Link 
+                href="https://sq3.io/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2"
+              >
+                <Globe className="h-4 w-4" />
+                <span>Landing Page</span>
+              </Link>
+            </Button>
+            <Button
+              variant="sequence"
+              asChild
+              size="sm"
+            >
+              <Link 
+                href="https://github.com/se3quence/core" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2"
+              >
+                <Github className="h-4 w-4" />
+                <span>GitHub</span>
+              </Link>
             </Button>
           </div>
         </div>
