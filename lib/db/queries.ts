@@ -1,11 +1,17 @@
-import { desc, and, eq, isNull } from 'drizzle-orm';
-import { db } from './drizzle';
-import { activityLogs, teamMembers, teams, users } from './schema';
-import { cookies } from 'next/headers';
-import { verifyToken } from '@/lib/auth/session';
+import { desc, and, eq, isNull } from "drizzle-orm";
+import { db } from "./drizzle";
+import {
+  activityLogs,
+  ActivityType,
+  teamMembers,
+  teams,
+  users,
+} from "./schema";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/auth/session";
 
 export async function getUser() {
-  const sessionCookie = (await cookies()).get('session');
+  const sessionCookie = (await cookies()).get("session");
   if (!sessionCookie || !sessionCookie.value) {
     return null;
   }
@@ -14,7 +20,7 @@ export async function getUser() {
   if (
     !sessionData ||
     !sessionData.user ||
-    typeof sessionData.user.id !== 'number'
+    typeof sessionData.user.id !== "number"
   ) {
     return null;
   }
@@ -59,7 +65,7 @@ export async function updateTeamSubscription(
     .update(teams)
     .set({
       ...subscriptionData,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     })
     .where(eq(teams.id, teamId));
 }
@@ -68,7 +74,7 @@ export async function getUserWithTeam(userId: number) {
   const result = await db
     .select({
       user: users,
-      teamId: teamMembers.teamId
+      teamId: teamMembers.teamId,
     })
     .from(users)
     .leftJoin(teamMembers, eq(users.id, teamMembers.userId))
@@ -81,7 +87,7 @@ export async function getUserWithTeam(userId: number) {
 export async function getActivityLogs() {
   const user = await getUser();
   if (!user) {
-    throw new Error('User not authenticated');
+    throw new Error("User not authenticated");
   }
 
   return await db
@@ -90,7 +96,7 @@ export async function getActivityLogs() {
       action: activityLogs.action,
       timestamp: activityLogs.timestamp,
       ipAddress: activityLogs.ipAddress,
-      userName: users.name
+      userName: users.name,
     })
     .from(activityLogs)
     .leftJoin(users, eq(activityLogs.userId, users.id))
@@ -116,15 +122,72 @@ export async function getTeamForUser() {
                 columns: {
                   id: true,
                   name: true,
-                  email: true
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                  email: true,
+                  profilePictureUrl: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 
   return result?.team || null;
+}
+
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { s3Client } from "@/lib/s3";
+
+export async function updateUserProfilePicture(userId: number, url: string) {
+  // 1. Get current user data to find the old image URL
+  const currentUser = await db
+    .select({
+      oldUrl: users.profilePictureUrl,
+      teamId: teamMembers.teamId,
+    })
+    .from(users)
+    .leftJoin(teamMembers, eq(users.id, teamMembers.userId))
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  const oldUrl = currentUser[0]?.oldUrl;
+  const teamId = currentUser[0]?.teamId;
+
+  // 2. Delete the old file from R2 if it exists
+  if (oldUrl && oldUrl.includes(process.env.R2_BUCKET_NAME!)) {
+    try {
+      const oldKey = oldUrl.split("/").pop(); // Extracts the filename/key
+      if (oldKey) {
+        await s3Client.send(
+          new DeleteObjectCommand({
+            Bucket: process.env.R2_BUCKET_NAME,
+            Key: `/avatars/${oldKey}`,
+          })
+        );
+      }
+    } catch (e) {
+      console.error("Failed to delete old avatar from R2:", e);
+      // We continue anyway so the DB update isn't blocked by a failed delete
+    }
+  }
+
+  // 3. Update the user record
+  await db
+    .update(users)
+    .set({
+      profilePictureUrl: url,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId));
+
+  // 4. Log the activity
+  if (teamId) {
+    await db.insert(activityLogs).values({
+      userId,
+      teamId,
+      action: ActivityType.UPDATE_ACCOUNT,
+      timestamp: new Date(),
+    });
+  }
 }

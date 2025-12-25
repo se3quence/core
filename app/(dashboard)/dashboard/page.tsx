@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardFooter
-} from '@/components/ui/card';
-import { customerPortalAction } from '@/lib/payments/actions';
-import { useActionState } from 'react';
-import { TeamDataWithMembers, User } from '@/lib/db/schema';
-import { removeTeamMember, inviteTeamMember } from '@/app/(login)/actions';
-import useSWR from 'swr';
-import { Suspense } from 'react';
-import { Input } from '@/components/ui/input';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Loader2, PlusCircle } from 'lucide-react';
+  CardFooter,
+} from "@/components/ui/card";
+import { customerPortalAction } from "@/lib/payments/actions";
+import { useActionState } from "react";
+import { TeamDataWithMembers, User } from "@/lib/db/schema";
+import { removeTeamMember, inviteTeamMember } from "@/app/(login)/actions";
+import useSWR from "swr";
+import { Suspense } from "react";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Loader2, PlusCircle } from "lucide-react";
 
 type ActionState = {
   error?: string;
@@ -38,7 +38,7 @@ function SubscriptionSkeleton() {
 }
 
 function ManageSubscription() {
-  const { data: teamData } = useSWR<TeamDataWithMembers>('/api/team', fetcher);
+  const { data: teamData } = useSWR<TeamDataWithMembers>("/api/team", fetcher);
 
   return (
     <Card className="mb-8">
@@ -50,18 +50,21 @@ function ManageSubscription() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div className="mb-4 sm:mb-0">
               <p className="font-medium">
-                Current Plan: {teamData?.planName || 'Free'}
+                Current Plan: {teamData?.planName || "Free"}
               </p>
               <p className="text-sm text-muted-foreground">
-                {teamData?.subscriptionStatus === 'active'
-                  ? 'Billed monthly'
-                  : teamData?.subscriptionStatus === 'trialing'
-                  ? 'Trial period'
-                  : 'No active subscription'}
+                {teamData?.subscriptionStatus === "active"
+                  ? "Billed monthly"
+                  : teamData?.subscriptionStatus === "trialing"
+                  ? "Trial period"
+                  : "No active subscription"}
               </p>
             </div>
             <form action={customerPortalAction}>
-              <Button type="submit" variant="outline">
+              <Button
+                type="submit"
+                variant="outline"
+              >
                 Manage Subscription
               </Button>
             </form>
@@ -94,14 +97,14 @@ function TeamMembersSkeleton() {
 }
 
 function TeamMembers() {
-  const { data: teamData } = useSWR<TeamDataWithMembers>('/api/team', fetcher);
+  const { data: teamData } = useSWR<TeamDataWithMembers>("/api/team", fetcher);
   const [removeState, removeAction, isRemovePending] = useActionState<
     ActionState,
     FormData
   >(removeTeamMember, {});
 
-  const getUserDisplayName = (user: Pick<User, 'id' | 'name' | 'email'>) => {
-    return user.name || user.email || 'Unknown User';
+  const getUserDisplayName = (user: Pick<User, "id" | "name" | "email">) => {
+    return user.name || user.email || "Unknown User";
   };
 
   if (!teamData?.teamMembers?.length) {
@@ -125,23 +128,21 @@ function TeamMembers() {
       <CardContent>
         <ul className="space-y-4">
           {teamData.teamMembers.map((member, index) => (
-            <li key={member.id} className="flex items-center justify-between">
+            <li
+              key={member.id}
+              className="flex items-center justify-between"
+            >
               <div className="flex items-center space-x-4">
                 <Avatar>
-                  {/* 
-                    This app doesn't save profile images, but here
-                    is how you'd show them:
-
-                    <AvatarImage
-                      src={member.user.image || ''}
-                      alt={getUserDisplayName(member.user)}
-                    />
-                  */}
+                  <AvatarImage
+                    src={member.user.profilePictureUrl || ""}
+                    alt={getUserDisplayName(member.user)}
+                  />
                   <AvatarFallback>
                     {getUserDisplayName(member.user)
-                      .split(' ')
+                      .split(" ")
                       .map((n) => n[0])
-                      .join('')}
+                      .join("")}
                   </AvatarFallback>
                 </Avatar>
                 <div>
@@ -155,14 +156,18 @@ function TeamMembers() {
               </div>
               {index > 1 ? (
                 <form action={removeAction}>
-                  <input type="hidden" name="memberId" value={member.id} />
+                  <input
+                    type="hidden"
+                    name="memberId"
+                    value={member.id}
+                  />
                   <Button
                     type="submit"
                     variant="outline"
                     size="sm"
                     disabled={isRemovePending}
                   >
-                    {isRemovePending ? 'Removing...' : 'Remove'}
+                    {isRemovePending ? "Removing..." : "Remove"}
                   </Button>
                 </form>
               ) : null}
@@ -188,8 +193,8 @@ function InviteTeamMemberSkeleton() {
 }
 
 function InviteTeamMember() {
-  const { data: user } = useSWR<User>('/api/user', fetcher);
-  const isOwner = user?.role === 'owner';
+  const { data: user } = useSWR<User>("/api/user", fetcher);
+  const isOwner = user?.role === "owner";
   const [inviteState, inviteAction, isInvitePending] = useActionState<
     ActionState,
     FormData
@@ -201,9 +206,15 @@ function InviteTeamMember() {
         <CardTitle>Invite Team Member</CardTitle>
       </CardHeader>
       <CardContent>
-        <form action={inviteAction} className="space-y-4">
+        <form
+          action={inviteAction}
+          className="space-y-4"
+        >
           <div>
-            <Label htmlFor="email" className="mb-2">
+            <Label
+              htmlFor="email"
+              className="mb-2"
+            >
               Email
             </Label>
             <Input
@@ -224,11 +235,17 @@ function InviteTeamMember() {
               disabled={!isOwner}
             >
               <div className="flex items-center space-x-2 mt-2">
-                <RadioGroupItem value="member" id="member" />
+                <RadioGroupItem
+                  value="member"
+                  id="member"
+                />
                 <Label htmlFor="member">Member</Label>
               </div>
               <div className="flex items-center space-x-2 mt-2">
-                <RadioGroupItem value="owner" id="owner" />
+                <RadioGroupItem
+                  value="owner"
+                  id="owner"
+                />
                 <Label htmlFor="owner">Owner</Label>
               </div>
             </RadioGroup>

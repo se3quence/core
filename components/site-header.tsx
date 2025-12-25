@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
-import { CommandSearch, SearchTrigger } from "@/components/command-search"
-import { Logo } from "@/components/logo"
-import { Box, Globe, Github } from "lucide-react"
+import * as React from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { CommandSearch, SearchTrigger } from "@/components/command-search";
+import { Logo } from "@/components/logo";
+import { Box, Globe, Github } from "lucide-react";
 
 export function SiteHeader() {
-  const [searchOpen, setSearchOpen] = React.useState(false)
+  const [searchOpen, setSearchOpen] = React.useState(false);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setSearchOpen((open) => !open)
+        e.preventDefault();
+        setSearchOpen((open) => !open);
       }
-    }
+    };
 
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
-  }, [])
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
 
   return (
     <>
@@ -33,9 +33,14 @@ export function SiteHeader() {
             orientation="vertical"
             className="mx-2 data-[orientation=vertical]:h-4"
           />
-          <Link href="/" className="flex items-center gap-2 mr-4">
+          <Link
+            href="/"
+            className="flex items-center gap-2 mr-4"
+          >
             <Logo size={26} />
-            <span className="text-xl font-semibold text-foreground">Sequence3</span>
+            <span className="text-xl font-semibold text-foreground">
+              Sequence3
+            </span>
           </Link>
           <div className="flex-1 max-w-sm">
             <SearchTrigger onClick={() => setSearchOpen(true)} />
@@ -46,7 +51,10 @@ export function SiteHeader() {
               asChild
               size="sm"
             >
-              <Link href="/blocks" className="flex items-center gap-2">
+              <Link
+                href="/blocks"
+                className="flex items-center gap-2"
+              >
                 <Box className="h-4 w-4" />
                 <span>Blocks</span>
               </Link>
@@ -56,8 +64,8 @@ export function SiteHeader() {
               asChild
               size="sm"
             >
-              <Link 
-                href="https://sq3.io/" 
+              <Link
+                href="https://sq3.io/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2"
@@ -71,8 +79,8 @@ export function SiteHeader() {
               asChild
               size="sm"
             >
-              <Link 
-                href="https://github.com/se3quence/core" 
+              <Link
+                href="https://github.com/se3quence/core"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2"
@@ -84,8 +92,10 @@ export function SiteHeader() {
           </div>
         </div>
       </header>
-      <CommandSearch open={searchOpen} onOpenChange={setSearchOpen} />
+      <CommandSearch
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+      />
     </>
-  )
+  );
 }
-

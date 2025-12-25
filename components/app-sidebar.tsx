@@ -64,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const userData = {
     name: user?.name || "User",
     email: user?.email || "",
-    avatar: "", // User schema doesn't have image field, using initials instead
+    avatar: user?.profilePictureUrl || "",
   };
 
   return (
