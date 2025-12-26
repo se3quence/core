@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { BellIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type Notification = {
   id: string;
@@ -25,6 +26,25 @@ export function NotificationsPopover({
 }: {
   notifications: Notification[];
 }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        className="rounded-full"
+        aria-label="Open notifications"
+      >
+        <BellIcon className="size-5" />
+      </Button>
+    );
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

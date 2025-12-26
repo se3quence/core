@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
 
@@ -35,6 +36,7 @@ export type Route = {
 export default function DashboardNavigation({ routes }: { routes: Route[] }) {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const pathname = usePathname();
   const [openCollapsible, setOpenCollapsible] = useState<string | null>(null);
 
   return (
@@ -42,6 +44,7 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
       {routes.map((route) => {
         const isOpen = !isCollapsed && openCollapsible === route.id;
         const hasSubRoutes = !!route.subs?.length;
+        const isActive = pathname === route.link;
 
         return (
           <SidebarMenuItem key={route.id}>
@@ -57,7 +60,7 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                   <SidebarMenuButton
                     className={cn(
                       "flex w-full items-center rounded-lg px-2 transition-colors",
-                      isOpen
+                      isOpen || isActive
                         ? "bg-sidebar-muted text-foreground"
                         : "text-muted-foreground hover:bg-sidebar-muted hover:text-foreground",
                       isCollapsed && "justify-center"
@@ -105,12 +108,15 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                 )}
               </Collapsible>
             ) : (
-              <SidebarMenuButton tooltip={route.title} asChild>
+              <SidebarMenuButton tooltip={route.title} asChild isActive={isActive}>
                 <Link
                   href={route.link}
                   prefetch={true}
                   className={cn(
-                    "flex items-center rounded-lg px-2 transition-colors text-muted-foreground hover:bg-sidebar-muted hover:text-foreground",
+                    "flex items-center rounded-lg px-2 transition-colors",
+                    isActive
+                      ? "bg-sidebar-muted text-foreground"
+                      : "text-muted-foreground hover:bg-sidebar-muted hover:text-foreground",
                     isCollapsed && "justify-center"
                   )}
                 >

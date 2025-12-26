@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AppSidebar } from "@/components/app-sidebar";
+import { DashboardSidebar } from "@/components/sidebar-03/app-sidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { Card } from "@/components/ui/card";
@@ -17,7 +17,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       }
     >
       {/* 1. The Sidebar Component */}
-      <AppSidebar />
+      <DashboardSidebar />
 
       {/* 2. The Main Content Area */}
       <SidebarInset>

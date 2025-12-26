@@ -12,25 +12,16 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import {
   Activity,
-  DollarSign,
-  Home,
-  Infinity,
-  LinkIcon,
-  Package2,
-  Percent,
-  PieChart,
   Settings,
-  ShoppingBag,
-  Sparkles,
-  Store,
-  TrendingUp,
+  Shield,
   Users,
 } from "lucide-react";
-import { Logo } from "@/components/sidebar-03/logo";
+import Link from "next/link";
+import { Logo } from "@/components/logo";
 import type { Route } from "./nav-main";
-import DashboardNavigation from "@/components/sidebar-03/nav-main";
-import { NotificationsPopover } from "@/components/sidebar-03/nav-notifications";
-import { TeamSwitcher } from "@/components/sidebar-03/team-switcher";
+import DashboardNavigation from "./nav-main";
+import { NotificationsPopover } from "./nav-notifications";
+import { TeamSwitcher } from "./team-switcher";
 
 const sampleNotifications = [
   {
@@ -58,115 +49,28 @@ const sampleNotifications = [
 
 const dashboardRoutes: Route[] = [
   {
-    id: "home",
-    title: "Home",
-    icon: <Home className="size-4" />,
-    link: "#",
-  },
-  {
-    id: "products",
-    title: "Products",
-    icon: <Package2 className="size-4" />,
-    link: "#",
-    subs: [
-      {
-        title: "Catalogue",
-        link: "#",
-        icon: <Package2 className="size-4" />,
-      },
-      {
-        title: "Checkout Links",
-        link: "#",
-        icon: <LinkIcon className="size-4" />,
-      },
-      {
-        title: "Discounts",
-        link: "#",
-        icon: <Percent className="size-4" />,
-      },
-    ],
-  },
-  {
-    id: "usage-billing",
-    title: "Usage Billing",
-    icon: <PieChart className="size-4" />,
-    link: "#",
-    subs: [
-      {
-        title: "Meters",
-        link: "#",
-        icon: <PieChart className="size-4" />,
-      },
-      {
-        title: "Events",
-        link: "#",
-        icon: <Activity className="size-4" />,
-      },
-    ],
-  },
-  {
-    id: "benefits",
-    title: "Benefits",
-    icon: <Sparkles className="size-4" />,
-    link: "#",
-  },
-  {
-    id: "customers",
-    title: "Customers",
+    id: "team",
+    title: "Team",
     icon: <Users className="size-4" />,
-    link: "#",
+    link: "/dashboard",
   },
   {
-    id: "sales",
-    title: "Sales",
-    icon: <ShoppingBag className="size-4" />,
-    link: "#",
-    subs: [
-      {
-        title: "Orders",
-        link: "#",
-        icon: <ShoppingBag className="size-4" />,
-      },
-      {
-        title: "Subscriptions",
-        link: "#",
-        icon: <Infinity className="size-4" />,
-      },
-    ],
-  },
-  {
-    id: "storefront",
-    title: "Storefront",
-    icon: <Store className="size-4" />,
-    link: "#",
-  },
-  {
-    id: "analytics",
-    title: "Analytics",
-    icon: <TrendingUp className="size-4" />,
-    link: "#",
-  },
-  {
-    id: "finance",
-    title: "Finance",
-    icon: <DollarSign className="size-4" />,
-    link: "#",
-    subs: [
-      { title: "Incoming", link: "#" },
-      { title: "Outgoing", link: "#" },
-      { title: "Payout Account", link: "#" },
-    ],
-  },
-  {
-    id: "settings",
-    title: "Settings",
+    id: "general",
+    title: "General",
     icon: <Settings className="size-4" />,
-    link: "#",
-    subs: [
-      { title: "General", link: "#" },
-      { title: "Webhooks", link: "#" },
-      { title: "Custom Fields", link: "#" },
-    ],
+    link: "/dashboard/general",
+  },
+  {
+    id: "activity",
+    title: "Activity",
+    icon: <Activity className="size-4" />,
+    link: "/dashboard/activity",
+  },
+  {
+    id: "security",
+    title: "Security",
+    icon: <Shield className="size-4" />,
+    link: "/dashboard/security",
   },
 ];
 
@@ -190,14 +94,14 @@ export function DashboardSidebar() {
             : "flex-row items-center justify-between"
         )}
       >
-        <a href="#" className="flex items-center gap-2">
-          <Logo className="h-8 w-8" />
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <Logo size={26} />
           {!isCollapsed && (
             <span className="font-semibold text-black dark:text-white">
-              Acme
+              Sequence3
             </span>
           )}
-        </a>
+        </Link>
 
         <motion.div
           key={isCollapsed ? "header-collapsed" : "header-expanded"}
