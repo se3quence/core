@@ -90,16 +90,28 @@ export function DashboardSidebar() {
         className={cn(
           "flex md:pt-3.5",
           isCollapsed
-            ? "flex-row items-center justify-between gap-y-4 md:flex-col md:items-start md:justify-start"
+            ? "flex-row items-center justify-between gap-y-4 md:flex-col md:items-center md:justify-center md:gap-2"
             : "flex-row items-center justify-between"
         )}
       >
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <Logo size={26} />
-          {!isCollapsed && (
-            <span className="font-semibold text-black dark:text-white">
-              Sequence3
-            </span>
+        <Link 
+          href="/dashboard" 
+          className={cn(
+            "flex items-center gap-2",
+            isCollapsed && "justify-center w-full"
+          )}
+        >
+          {isCollapsed ? (
+            <div className="flex items-center justify-center w-full">
+              <Logo size={26} />
+            </div>
+          ) : (
+            <>
+              <Logo size={26} />
+              <span className="font-semibold text-black dark:text-white">
+                Sequence3
+              </span>
+            </>
           )}
         </Link>
 
@@ -107,20 +119,33 @@ export function DashboardSidebar() {
           key={isCollapsed ? "header-collapsed" : "header-expanded"}
           className={cn(
             "flex items-center gap-2",
-            isCollapsed ? "flex-row md:flex-col-reverse" : "flex-row"
+            isCollapsed ? "flex-row md:flex-col md:items-center md:w-full md:gap-2" : "flex-row"
           )}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <NotificationsPopover notifications={sampleNotifications} />
-          <SidebarTrigger />
+          {isCollapsed ? (
+            <>
+              <div className="md:w-full md:flex md:justify-center">
+                <NotificationsPopover notifications={sampleNotifications} />
+              </div>
+              <div className="md:w-full md:flex md:justify-center">
+                <SidebarTrigger />
+              </div>
+            </>
+          ) : (
+            <>
+              <NotificationsPopover notifications={sampleNotifications} />
+              <SidebarTrigger />
+            </>
+          )}
         </motion.div>
       </SidebarHeader>
-      <SidebarContent className="gap-4 px-2 py-4">
+      <SidebarContent className={cn("gap-4 py-4", isCollapsed ? "px-0" : "px-2")}>
         <DashboardNavigation routes={dashboardRoutes} />
       </SidebarContent>
-      <SidebarFooter className="px-2">
+      <SidebarFooter className={cn(isCollapsed ? "px-0" : "px-2")}>
         <TeamSwitcher teams={teams} />
       </SidebarFooter>
     </Sidebar>

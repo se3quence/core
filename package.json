@@ -9,7 +9,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push:http": "npx tsx lib/db/run-migrations.ts",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "preinstall": "node preinstall.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.958.0",

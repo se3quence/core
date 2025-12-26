@@ -40,14 +40,14 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
   const [openCollapsible, setOpenCollapsible] = useState<string | null>(null);
 
   return (
-    <SidebarMenu>
+    <SidebarMenu className={cn(isCollapsed && "items-center")}>
       {routes.map((route) => {
         const isOpen = !isCollapsed && openCollapsible === route.id;
         const hasSubRoutes = !!route.subs?.length;
         const isActive = pathname === route.link;
 
         return (
-          <SidebarMenuItem key={route.id}>
+          <SidebarMenuItem key={route.id} className={cn(isCollapsed && "flex justify-center")}>
             {hasSubRoutes ? (
               <Collapsible
                 open={isOpen}
@@ -59,27 +59,33 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton
                     className={cn(
-                      "flex w-full items-center rounded-lg px-2 transition-colors",
+                      "flex w-full items-center rounded-lg transition-colors",
                       isOpen || isActive
                         ? "bg-sidebar-muted text-foreground"
                         : "text-muted-foreground hover:bg-sidebar-muted hover:text-foreground",
-                      isCollapsed && "justify-center"
+                      isCollapsed ? "justify-center p-0" : "px-2"
                     )}
                   >
-                    {route.icon}
-                    {!isCollapsed && (
-                      <span className="ml-2 flex-1 text-sm font-medium">
-                        {route.title}
-                      </span>
-                    )}
-                    {!isCollapsed && hasSubRoutes && (
-                      <span className="ml-auto">
-                        {isOpen ? (
-                          <ChevronUp className="size-4" />
-                        ) : (
-                          <ChevronDown className="size-4" />
+                    {isCollapsed ? (
+                      <div className="flex items-center justify-center w-full h-full">
+                        {route.icon}
+                      </div>
+                    ) : (
+                      <>
+                        {route.icon}
+                        <span className="ml-2 flex-1 text-sm font-medium">
+                          {route.title}
+                        </span>
+                        {hasSubRoutes && (
+                          <span className="ml-auto">
+                            {isOpen ? (
+                              <ChevronUp className="size-4" />
+                            ) : (
+                              <ChevronDown className="size-4" />
+                            )}
+                          </span>
                         )}
-                      </span>
+                      </>
                     )}
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
@@ -113,18 +119,24 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                   href={route.link}
                   prefetch={true}
                   className={cn(
-                    "flex items-center rounded-lg px-2 transition-colors",
+                    "flex items-center rounded-lg transition-colors",
                     isActive
                       ? "bg-sidebar-muted text-foreground"
                       : "text-muted-foreground hover:bg-sidebar-muted hover:text-foreground",
-                    isCollapsed && "justify-center"
+                    isCollapsed ? "justify-center p-0" : "px-2"
                   )}
                 >
-                  {route.icon}
-                  {!isCollapsed && (
-                    <span className="ml-2 text-sm font-medium">
-                      {route.title}
-                    </span>
+                  {isCollapsed ? (
+                    <div className="flex items-center justify-center w-full h-full">
+                      {route.icon}
+                    </div>
+                  ) : (
+                    <>
+                      {route.icon}
+                      <span className="ml-2 text-sm font-medium">
+                        {route.title}
+                      </span>
+                    </>
                   )}
                 </Link>
               </SidebarMenuButton>
