@@ -30,45 +30,76 @@ function AccountForm({
   mutate: any;
 }) {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
+    setUploadError(null);
+    setUploadSuccess(false);
+
     if (file.size > 2 * 1024 * 1024) {
-      alert("File is too large. Max 2MB.");
+      setUploadError("File is too large. Maximum size is 2MB.");
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setUploadError("Please select an image file.");
       return;
     }
 
     setIsUploading(true);
+
     try {
-      // 1. Get Presigned URL
-      const res = await fetch("/api/upload", {
+      // Get presigned URL
+      const presignRes = await fetch("/api/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ contentType: file.type, fileName: file.name }),
       });
-      const { uploadUrl, publicUrl } = await res.json();
 
-      // 2. PUT directly to R2
-      await fetch(uploadUrl, {
+      if (!presignRes.ok) {
+        const error = await presignRes.json().catch(() => ({}));
+        throw new Error(error.error || "Failed to get upload URL");
+      }
+
+      const { uploadUrl, publicUrl } = await presignRes.json();
+      if (!uploadUrl || !publicUrl) {
+        throw new Error("Invalid response from server");
+      }
+
+      // Upload to R2
+      const uploadRes = await fetch(uploadUrl, {
         method: "PUT",
         body: file,
         headers: { "Content-Type": file.type },
       });
 
-      // 3. Update DB
-      await fetch("/api/user", {
+      if (!uploadRes.ok) {
+        throw new Error("Failed to upload file");
+      }
+
+      // Update database
+      const updateRes = await fetch("/api/user", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: publicUrl }),
       });
 
-      // 4. Refresh UI
+      if (!updateRes.ok) {
+        const error = await updateRes.json().catch(() => ({}));
+        throw new Error(error.error || "Failed to update profile picture");
+      }
+
       await mutate();
+      setUploadSuccess(true);
+      setTimeout(() => setUploadSuccess(false), 3000);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err) {
-      console.error("Upload failed:", err);
+      setUploadError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setIsUploading(false);
     }
@@ -97,17 +128,33 @@ function AccountForm({
             onClick={() => fileInputRef.current?.click()}
           >
             {isUploading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Uploading...
+              </>
             ) : (
-              <Upload className="mr-2 h-4 w-4" />
+              <>
+                <Upload className="mr-2 h-4 w-4" />
+                Change Photo
+              </>
             )}
-            Change Photo
           </Button>
+          {uploadError && (
+            <p className="text-red-500 text-xs mt-1">{uploadError}</p>
+          )}
+          {uploadSuccess && (
+            <p className="text-green-500 text-xs mt-1">
+              Profile picture updated successfully!
+            </p>
+          )}
+          <p className="text-xs text-gray-500 mt-1">
+            JPG, PNG, GIF or WEBP. Max 2MB.
+          </p>
           <input
             type="file"
             ref={fileInputRef}
             className="hidden"
-            accept="image/*"
+            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
             onChange={handleUpload}
           />
         </div>

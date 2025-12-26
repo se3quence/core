@@ -137,10 +137,9 @@ export async function getTeamForUser() {
 }
 
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { s3Client } from "@/lib/s3";
+import { s3Client, extractKeyFromPublicUrl } from "@/lib/s3";
 
-export async function updateUserProfilePicture(userId: number, url: string) {
-  // 1. Get current user data to find the old image URL
+export async function updateUserProfilePicture(userId: number, url: string): Promise<void> {
   const currentUser = await db
     .select({
       oldUrl: users.profilePictureUrl,
@@ -151,43 +150,43 @@ export async function updateUserProfilePicture(userId: number, url: string) {
     .where(eq(users.id, userId))
     .limit(1);
 
-  const oldUrl = currentUser[0]?.oldUrl;
-  const teamId = currentUser[0]?.teamId;
+  if (currentUser.length === 0) {
+    throw new Error(`User ${userId} not found`);
+  }
 
-  // 2. Delete the old file from R2 if it exists
-  if (oldUrl && oldUrl.includes(process.env.R2_BUCKET_NAME!)) {
+  const { oldUrl, teamId } = currentUser[0];
+
+  // Delete old avatar if it exists and is different
+  if (oldUrl && oldUrl !== url) {
     try {
-      const oldKey = oldUrl.split("/").pop(); // Extracts the filename/key
-      if (oldKey) {
+      const key = extractKeyFromPublicUrl(oldUrl);
+      if (key?.startsWith("avatars/") && process.env.R2_BUCKET_NAME) {
         await s3Client.send(
-          new DeleteObjectCommand({
-            Bucket: process.env.R2_BUCKET_NAME,
-            Key: `/avatars/${oldKey}`,
-          })
+          new DeleteObjectCommand({ Bucket: process.env.R2_BUCKET_NAME, Key: key })
         );
       }
-    } catch (e) {
-      console.error("Failed to delete old avatar from R2:", e);
-      // We continue anyway so the DB update isn't blocked by a failed delete
+    } catch (error) {
+      console.error("Failed to delete old avatar:", error);
     }
   }
 
-  // 3. Update the user record
+  // Update user record
   await db
     .update(users)
-    .set({
-      profilePictureUrl: url,
-      updatedAt: new Date(),
-    })
+    .set({ profilePictureUrl: url, updatedAt: new Date() })
     .where(eq(users.id, userId));
 
-  // 4. Log the activity
+  // Log activity if user is in a team
   if (teamId) {
-    await db.insert(activityLogs).values({
-      userId,
-      teamId,
-      action: ActivityType.UPDATE_ACCOUNT,
-      timestamp: new Date(),
-    });
+    try {
+      await db.insert(activityLogs).values({
+        userId,
+        teamId,
+        action: ActivityType.UPDATE_ACCOUNT,
+        timestamp: new Date(),
+      });
+    } catch (error) {
+      console.error("Failed to log activity:", error);
+    }
   }
 }
