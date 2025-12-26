@@ -11,6 +11,7 @@ import { User } from "@/lib/db/schema";
 import useSWR from "swr";
 import { Suspense } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "@/lib/toast";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -30,28 +31,28 @@ function AccountForm({
   mutate: any;
 }) {
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
-    setUploadError(null);
-    setUploadSuccess(false);
-
     if (file.size > 2 * 1024 * 1024) {
-      setUploadError("File is too large. Maximum size is 2MB.");
+      toast.error("File too large", {
+        description: "Maximum file size is 2MB. Please choose a smaller image.",
+      });
       return;
     }
 
     if (!file.type.startsWith("image/")) {
-      setUploadError("Please select an image file.");
+      toast.error("Invalid file type", {
+        description: "Please select an image file (JPG, PNG, GIF, or WEBP).",
+      });
       return;
     }
 
     setIsUploading(true);
+    const toastId = toast.loading("Uploading profile picture...");
 
     try {
       // Get presigned URL
@@ -95,11 +96,16 @@ function AccountForm({
       }
 
       await mutate();
-      setUploadSuccess(true);
-      setTimeout(() => setUploadSuccess(false), 3000);
+      toast.success("Profile picture updated", {
+        id: toastId,
+        description: "Your profile picture has been successfully updated.",
+      });
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err) {
-      setUploadError(err instanceof Error ? err.message : "Upload failed");
+      toast.error("Upload failed", {
+        id: toastId,
+        description: err instanceof Error ? err.message : "Please try again later.",
+      });
     } finally {
       setIsUploading(false);
     }
@@ -139,14 +145,6 @@ function AccountForm({
               </>
             )}
           </Button>
-          {uploadError && (
-            <p className="text-red-500 text-xs mt-1">{uploadError}</p>
-          )}
-          {uploadSuccess && (
-            <p className="text-green-500 text-xs mt-1">
-              Profile picture updated successfully!
-            </p>
-          )}
           <p className="text-xs text-gray-500 mt-1">
             JPG, PNG, GIF or WEBP. Max 2MB.
           </p>

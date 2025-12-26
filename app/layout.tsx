@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { getUser, getTeamForUser } from "@/lib/db/queries";
 import { SWRConfig } from "swr";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Sequence3 - Dashboard",
@@ -42,6 +43,7 @@ export default function RootLayout({
           >
             {children}
           </SWRConfig>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

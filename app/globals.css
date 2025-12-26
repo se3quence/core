@@ -177,3 +177,16 @@ html {
 .animate-logo-scroll:hover {
   animation-play-state: paused;
 }
+
+/* Sonner toast description - grey color for better visibility */
+[data-sonner-toast] [data-description],
+[data-sonner-toast] .sonner-description {
+  color: oklch(0.5 0 0) !important;
+  opacity: 1 !important;
+}
+
+.dark [data-sonner-toast] [data-description],
+.dark [data-sonner-toast] .sonner-description {
+  color: oklch(0.65 0 0) !important;
+  opacity: 1 !important;
+}

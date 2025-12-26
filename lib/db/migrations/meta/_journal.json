@@ -15,6 +15,13 @@
       "when": 1766679172151,
       "tag": "0001_freezing_randall",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766737751166,
+      "tag": "0002_cute_mystique",
+      "breakpoints": true
     }
   ]
 }
